@@ -1,0 +1,33 @@
+{
+  "name": "csvfilemanipulation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "author": "Bikal Nepal",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.19.0",
+    "csvtojson": "^2.0.8",
+    "express": "^4.17.0",
+    "lodash": "^4.17.11",
+    "moment": "^2.24.0",
+    "mongoose": "^5.5.10"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BikalNepal/csvFileManipulation.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/BikalNepal/csvFileManipulation/issues"
+  },
+  "homepage": "https://github.com/BikalNepal/csvFileManipulation#readme"
+}
