@@ -3,16 +3,16 @@ const { Schema } = mongoose;
 
 let carSchema = new Schema({
   id: String,
-  firstName: String,
-  lastName: String,
+  first_name: String,
+  last_name: String,
   email: String,
   gender: String,
-  ipAddress: String,
-  createdAt: Date,
+  ip_address: String,
+  createdAt: String,
   country: String,
   date: Date,
-  carType: String,
-  manufactureDate: Date,
+  car_type: String,
+  manufacture_date: Date,
   manufacturer: String
 });
 module.exports = mongoose.model("Car", carSchema);

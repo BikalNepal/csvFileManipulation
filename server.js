@@ -38,68 +38,68 @@ db.once("open", () => {
 });
 
 //Use Routes
+let toSortCars;
 app.use("/api/", (req, res) => {
-  res.json(cars);
+  Car.find({}).then(carArr => {
+    toSortCars = carArr;
+    res.json(carArr);
+  });
 });
 
 //sort data in ascending order acc to dates
 //use map for sorted data and inside that from first date push all the data that is within 10 days as
 //array.push([10daysData])
 
-app.get("/sortedCars", async (req, res) => {
-  var today = new Date(cars[0].date),
-    oneDay = 1000 * 60 * 60 * 24,
-    tenDays = new Date(today.valueOf() - 10 * oneDay);
-  let new10Days = moment(tenDays).format("MM/DD/YYYY");
-  let new1Day = moment(oneDay).format("MM/DD/YYYY");
-  let carDates = await Car.find({ date: { $lt: new10Days } });
-  console.log(carDates);
-  Car.aggregate()
-    .sort({ date: 1 })
-    .then(resp => res.json(resp))
-    .catch(err => console.log("err=>", err));
-
-  // [
-  //   {
-  //     $match: {
-  //       date: { $gte: thirtyDays }
-  //     }
-  //   },
-  //   {
-  //     $group: {
-  //       _id: {
-  //         $cond: [
-  //           { $lt: ["$date", fifteenDays] },
-  //           "16-30",
-  //           { $cond: [{ $lt: ["$date", sevenDays] }, "08-15", "01-07"] }
-  //         ]
-  //       },
-  //       count: { $sum: 1 },
-  //       totalValue: { $sum: "$value" }
-  //     }
-  //   }
-  // ]
-
-  // Car.aggregate()
-  //   .group({
-  //     _id: "$manufacture_date",
-  //     id: { $first: "$id" },
-  //     first_name: { $first: "$first_name" },
-  //     last_name: { $first: "$last_name" },
-  //     email: { $first: "$email" },
-  //     gender: { $first: "$gender" },
-  //     ip_address: { $first: "$ip_address" },
-  //     createdAt: { $first: "$createdAt" },
-  //     country: { $first: "$country" },
-  //     date: { $first: "$date" },
-  //     car_type: { $first: "$car_type" },
-  //     manufacturer: { $first: "$manufacturer" },
-  //     manufacture_date: { $first: "$manufacture_date" },
-  //     count: { $sum: 1 },
-  //     emails: { $addToSet: "$email" }
-  //   })
-  //   .project({ _id: 0 })
-  //   .then(sortedCars => res.json(sortedCars))
-  //   .catch(err => comsole.log(err));
+app.get("/sortedCars", (req, res) => {
+  Car.find({}).then(toSortCars => {
+    toSortCars.sort((a, b) => {
+      let x = new Date(a.date);
+      let y = new Date(b.date);
+      return x - y;
+    });
+    let startDate = toSortCars[0].date;
+    let endDate = moment(startDate).add(10, "days");
+    let totalArrays = [];
+    let tenDaysArrays = [];
+    toSortCars.length = 100;
+    let emails = [];
+    let count = 0;
+    let position = 0;
+    for (toSortCar of toSortCars) {
+      if (toSortCar.date > endDate) {
+        startDate = endDate;
+        endDate = moment(startDate).add(10, "days");
+        count = emails.length;
+        let cars;
+        tenDaysArrays.map(item => {
+          cars = {
+            id: item.id,
+            email: item.email,
+            date: item.date,
+            count: count,
+            emails: emails
+          };
+          return cars;
+        });
+        totalArrays[position] = cars;
+        position = position + 1;
+        emails = [];
+        count = 0;
+        tenDaysArrays = [];
+      }
+      if (toSortCar.date <= endDate) {
+        tenDaysArrays.push(toSortCar);
+        emails.push(toSortCar.email);
+      }
+    }
+    console.log(totalArrays[0]);
+    let merged = [].concat(...totalArrays);
+    merged.sort((a, b) => {
+      let x = new Date(a.date);
+      let y = new Date(b.date);
+      return x - y;
+    });
+    res.json(merged);
+  });
 });
 app.listen(port, () => console.log(`Server running on ${port}`));
